@@ -1,0 +1,59 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Packaging / build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+wheels/
+pip-wheel-metadata/
+
+# ---------------------------------------------------------------------------
+# Test / type / lint caches
+# ---------------------------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.tox/
+.nox/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# ---------------------------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+
+# ---------------------------------------------------------------------------
+# Editor / OS
+# ---------------------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# Project-specific
+# ---------------------------------------------------------------------------
+# Raw capture dumps and scratch material live here before curation into
+# tests/ — keep them out of the repo. (Curated fixtures under fixtures/ and
+# the lab configs under lab/ ARE committed — they are the test corpus.)
+collected_info/
+
+# Tailwind / Node — not used by rsbird; guard against stray copies.
+node_modules/
