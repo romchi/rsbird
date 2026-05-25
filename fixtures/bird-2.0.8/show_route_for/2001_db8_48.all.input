@@ -1,0 +1,17 @@
+0001 BIRD 2.0.8 ready.
+1007-Table master6:
+ 2001:db8::/48        unicast [rs1_ipv6 12:52:10.922] * (100) [AS65010i]
+ 	via 2001:db8:123::10 on eth0
+1008-	Type: BGP univ
+1012-	BGP.origin: IGP
+ 	BGP.as_path: 65010
+ 	BGP.next_hop: 2001:db8:123::10 fe80::d47c:36ff:fe35:dbf9
+ 	BGP.local_pref: 100
+1007-                     unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+1008-	Type: BGP univ
+1012-	BGP.origin: IGP
+ 	BGP.as_path: 65020 65010
+ 	BGP.next_hop: 2001:db8:123::20 fe80::5c5e:f7ff:fef9:c364
+ 	BGP.local_pref: 100
+0000 

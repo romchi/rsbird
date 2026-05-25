@@ -1,0 +1,15 @@
+0001 BIRD 3.1.2 ready.
+1007-Table master6:
+ 2001:db8:123::/64    unicast [direct6 12:52:07.487] * (240)
+ 	dev eth0
+                      unicast [rs2_ipv6 12:52:10.842] (100) [AS65020i]
+ 	via 2001:db8:123::20 on eth0
+                      unicast [rs1_ipv6 12:52:11.704] (100) [AS65010i]
+ 	via 2001:db8:123::10 on eth0
+ ::/0                 unicast [rs1_ipv6 12:52:11.702] * (100) [AS65068i]
+ 	via 2001:db8:123::10 on eth0
+                      unicast [rs2_ipv6 12:52:11.064] (100) [AS65068i]
+ 	via 2001:db8:123::20 on eth0
+                      unicast [kernel6 12:52:08.482] (10)
+ 	via 2001:db8:123::1 on eth0
+0000 

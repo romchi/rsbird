@@ -1,0 +1,426 @@
+#!/usr/bin/env python3
+"""``rsbird`` — standalone CLI for the BIRD route-server control socket.
+
+This is the BIRD analogue of ``birdc``: a thin command-line front-end that
+talks to BIRD via the :mod:`rsbird` Python library. It is intentionally not
+part of the library package — the library is what you ``import``, this
+script is what you run.
+"""
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import os
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Iterable, Sequence
+
+# Run-from-source bootstrap: invoked as ``./bin/rsbird`` from a checkout,
+# Python only puts ``bin/`` on sys.path — not the repo root that holds the
+# ``rsbird/`` package. Add it when the sibling source package is present.
+# This is a no-op once installed (site-packages already provides rsbird).
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if (_REPO_ROOT / "rsbird" / "__init__.py").is_file():
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from rsbird import RsBird, __version__  # noqa: E402  (after sys.path bootstrap)
+from rsbird.exceptions import RsBirdError  # noqa: E402
+from rsbird.protocol import BirdConnection  # noqa: E402
+
+ENV_SOCKET = "RSBIRD_SOCKET"
+
+
+# ---------------------------------------------------------------------------
+# Common helpers
+# ---------------------------------------------------------------------------
+
+def _socket_arg(args: argparse.Namespace) -> str:
+    sock = args.socket or os.environ.get(ENV_SOCKET)
+    if not sock:
+        sys.exit(f"error: --socket PATH (or env ${ENV_SOCKET}) is required")
+    return sock
+
+
+def _print_json(obj) -> None:
+    print(json.dumps(obj, indent=2, default=str))
+
+
+def _fmt_dt(value) -> str:
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    return str(value or "")
+
+
+def _print_table(cols: Sequence[str], rows: Iterable[Sequence[object]]) -> None:
+    """Two-row separator table — no third-party deps, plain monospace alignment."""
+    rows = list(rows)
+    if not rows:
+        print("(no rows)")
+        return
+    widths = [len(c) for c in cols]
+    for row in rows:
+        for i, value in enumerate(row):
+            widths[i] = max(widths[i], len(str(value)))
+    fmt = "  ".join(f"{{:<{w}}}" for w in widths)
+    print(fmt.format(*cols))
+    print(fmt.format(*("-" * w for w in widths)))
+    for row in rows:
+        print(fmt.format(*(str(v) for v in row)))
+
+
+# ---------------------------------------------------------------------------
+# Pretty-printers
+# ---------------------------------------------------------------------------
+
+def fmt_status(status) -> None:
+    print(f"BIRD {status.version}")
+    print(f"  Router ID:            {status.router_id}")
+    if status.hostname:
+        print(f"  Hostname:             {status.hostname}")
+    print(f"  Server time:          {_fmt_dt(status.server_time)}")
+    print(f"  Last reboot:          {_fmt_dt(status.last_reboot)}")
+    print(f"  Last reconfiguration: {_fmt_dt(status.last_reconfiguration)}")
+
+
+def fmt_protocols(protocols, *, brief: bool) -> None:
+    rows = []
+    for p in protocols:
+        if brief:
+            rows.append((p.name, p.proto, p.state, p.info or ""))
+            continue
+        rows.append((
+            p.name,
+            p.proto,
+            p.state,
+            _fmt_dt(p.since),
+            p.neighbor_address or "",
+            str(p.neighbor_as) if p.neighbor_as is not None else "",
+            p.info or "",
+        ))
+    cols = (["NAME", "PROTO", "STATE", "INFO"] if brief else
+            ["NAME", "PROTO", "STATE", "SINCE", "ADDRESS", "AS", "INFO"])
+    _print_table(cols, rows)
+
+
+def fmt_routes(routes, *, detail: bool) -> None:
+    if detail:
+        for route in routes:
+            _print_route_detail(route)
+            print()
+        return
+    rows = [
+        (
+            "*" if r.best else " ",
+            r.prefix,
+            str(r.origin_as) if r.origin_as is not None else "",
+            r.via or "",
+            r.protocol or "",
+            _fmt_dt(r.learned),
+            str(r.preference) if r.preference is not None else "",
+        )
+        for r in routes
+    ]
+    _print_table(["", "PREFIX", "ORIGIN AS", "PEER", "SOURCE", "LEARNED", "PREF"], rows)
+
+
+def _print_route_detail(r) -> None:
+    star = "*" if r.best else " "
+    via = r.via or "-"
+    iface = r.interface or "-"
+    print(
+        f"{star} {r.prefix}  via {via}  on {iface}  "
+        f"[{r.protocol or '-'} {_fmt_dt(r.learned)}]  "
+        f"({r.preference if r.preference is not None else '-'})  "
+        f"AS{r.origin_as if r.origin_as is not None else '-'}",
+    )
+    if r.type:
+        print(f"    Type:         {r.type}")
+    if r.bgp is None:
+        return
+    b = r.bgp
+    if b.origin:
+        print(f"    Origin:       {b.origin}")
+    if b.as_path:
+        print(f"    AS path:      {' '.join(str(x) for x in b.as_path)}")
+    if b.next_hop:
+        print(f"    Next-hop:     {' '.join(b.next_hop)}")
+    if b.local_pref is not None:
+        print(f"    Local pref:   {b.local_pref}")
+    if b.med is not None:
+        print(f"    MED:          {b.med}")
+    if b.communities:
+        print(f"    Community:    {' '.join(str(c) for c in b.communities)}")
+    if b.large_communities:
+        print(f"    Large comm:   {' '.join(str(c) for c in b.large_communities)}")
+    if b.ext_communities:
+        print(f"    Ext comm:     {' '.join(str(c) for c in b.ext_communities)}")
+
+
+def fmt_neighbor(p) -> None:
+    print(f"Peer: {p.name}")
+    print(f"  Protocol:   {p.proto}")
+    print(f"  State:      {p.state}  (up={p.up})")
+    if p.bgp_state is not None:
+        print(f"  BGP state:  {p.bgp_state.value}")
+    if p.neighbor_address:
+        print(f"  Address:    {p.neighbor_address}")
+    if p.neighbor_as is not None:
+        print(f"  AS:         {p.neighbor_as}")
+    if p.neighbor_id:
+        print(f"  Router ID:  {p.neighbor_id}")
+    if p.since:
+        print(f"  Since:      {_fmt_dt(p.since)}")
+    if p.description:
+        print(f"  Desc:       {p.description}")
+    if p.hold_timer:
+        print(f"  Hold/keep:  {p.hold_timer} / {p.keepalive_timer or '-'}")
+    if p.channels:
+        for ch in p.channels:
+            print(f"  Channel {ch.name}: table={ch.table or '-'}  "
+                  f"state={ch.state or '-'}  imported={ch.routes.imported}  "
+                  f"exported={ch.routes.exported}  filtered={ch.routes.filtered}")
+    elif p.routes is not None:
+        print(f"  Routes:     imported={p.routes.imported}  "
+              f"exported={p.routes.exported}  filtered={p.routes.filtered}")
+
+
+# ---------------------------------------------------------------------------
+# Commands
+# ---------------------------------------------------------------------------
+
+async def cmd_status(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        status = await bird.status()
+    if args.json:
+        _print_json(status.to_dict())
+    else:
+        fmt_status(status)
+    return 0
+
+
+async def cmd_protocols(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        protos = await bird.protocols(name=args.name, detail=not args.brief)
+    if args.json:
+        _print_json([p.to_dict() for p in protos])
+    else:
+        fmt_protocols(protos, brief=args.brief)
+    return 0
+
+
+async def cmd_tables(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        tables = await bird.tables()
+    if args.json:
+        _print_json(tables)
+    else:
+        for name in tables:
+            print(name)
+    return 0
+
+
+async def cmd_routes(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        routes = await bird.routes(
+            table=args.table, prefix=args.prefix, protocol=args.protocol,
+            where=args.where, detail=args.detail, best=args.best,
+            filtered=args.filtered,
+        )
+    if args.json:
+        _print_json([r.to_dict() for r in routes])
+    else:
+        fmt_routes(routes, detail=args.detail)
+    return 0
+
+
+async def cmd_route(args) -> int:
+    """Shortcut: ``rsbird route <prefix>`` -> ``rsbird routes -p <prefix>``."""
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        routes = await bird.routes(prefix=args.prefix, detail=args.detail)
+    if args.json:
+        _print_json([r.to_dict() for r in routes])
+    else:
+        fmt_routes(routes, detail=args.detail)
+    return 0
+
+
+async def cmd_neighbor(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        peers = await bird.protocols(detail=True)
+    matches = [p for p in peers if p.neighbor_address == args.ip]
+    if not matches:
+        sys.exit(f"error: no BGP peer with address {args.ip}")
+    peer = matches[0]
+    if args.json:
+        _print_json(peer.to_dict())
+    else:
+        fmt_neighbor(peer)
+    return 0
+
+
+async def cmd_community(args, *, method_name: str) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        method = getattr(bird, method_name)
+        routes = await method(
+            args.value, table=args.table, detail=args.detail, best=args.best,
+        )
+    if args.json:
+        _print_json([r.to_dict() for r in routes])
+    else:
+        fmt_routes(routes, detail=args.detail)
+    return 0
+
+
+async def cmd_config_check(args) -> int:
+    async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
+        result = await bird.config_check()
+    if args.json:
+        _print_json(result.to_dict())
+    else:
+        status = "OK" if result.ok else "ERROR"
+        print(f"[{status}] {result.code:04d} {result.message}")
+        if result.file:
+            print(f"  Config file: {result.file}")
+    return 0 if result.ok else 1
+
+
+async def cmd_raw(args) -> int:
+    """Send a raw BIRD CLI command and print the bytes verbatim."""
+    conn = await BirdConnection.open(_socket_arg(args), timeout=args.timeout)
+    try:
+        raw = await conn.query(args.command)
+    finally:
+        await conn.close()
+    sys.stdout.write(raw)
+    if not raw.endswith("\n"):
+        sys.stdout.write("\n")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# argparse
+# ---------------------------------------------------------------------------
+
+def build_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(
+        prog="rsbird",
+        description="CLI for the BIRD route-server control socket.",
+    )
+    p.add_argument("--version", action="version", version=f"rsbird {__version__}")
+    p.add_argument(
+        "-s", "--socket",
+        help=f"path to BIRD control socket (or env ${ENV_SOCKET})",
+    )
+    p.add_argument(
+        "--timeout", type=float, default=30.0,
+        help="per-call timeout in seconds (default 30)",
+    )
+    p.add_argument(
+        "--json", action="store_true",
+        help="emit machine-readable JSON instead of the formatted view",
+    )
+
+    sub = p.add_subparsers(dest="cmd", required=True, metavar="<command>")
+
+    sub.add_parser("status", help="show BIRD status (version, router ID, uptime)")
+
+    sp = sub.add_parser("protocols", help="list protocols / peers")
+    sp.add_argument("name", nargs="?", help="restrict to one protocol by name")
+    sp.add_argument("--brief", action="store_true",
+                    help="summary table only — skip the detail query")
+
+    sub.add_parser("tables", help="list routing-table names")
+
+    sp = sub.add_parser("routes", help="show routes (composable filters)")
+    sp.add_argument("--table", "-t", help="routing table to query")
+    sp.add_argument("--prefix", "-p", help="show route for an IP / prefix")
+    sp.add_argument("--protocol", "-P", help="restrict to one protocol")
+    sp.add_argument("--where", "-w", help="raw BIRD filter expression")
+    sp.add_argument("--best", "-b", action="store_true",
+                    help="only the best (preferred) route per prefix")
+    sp.add_argument("--filtered", action="store_true",
+                    help="only filtered (rejected by import) routes")
+    sp.add_argument("--detail", "-d", action="store_true",
+                    help="include BGP attribute block per route")
+
+    sp = sub.add_parser("route", help="show route for a prefix (shortcut)")
+    sp.add_argument("prefix", help="IP or prefix to look up")
+    sp.add_argument("--detail", "-d", action="store_true")
+
+    sp = sub.add_parser("neighbor", help="show one BGP peer by its address")
+    sp.add_argument("ip", help="neighbor IP address")
+
+    for cmd_name, method_name in (
+        ("community", "routes_by_community"),
+        ("ext-community", "routes_by_ext_community"),
+        ("large-community", "routes_by_large_community"),
+    ):
+        sp = sub.add_parser(
+            cmd_name,
+            help=f"find routes by {cmd_name.replace('-', ' ')}",
+        )
+        sp.add_argument("value", help="e.g. 0:13335 / rt:65010:1 / 65010:1:2")
+        sp.add_argument("--table", "-t")
+        sp.add_argument("--detail", "-d", action="store_true")
+        sp.add_argument("--best", "-b", action="store_true")
+        sp.set_defaults(_method=method_name)
+
+    sub.add_parser("config-check",
+                   help="validate the on-disk config (configure check)")
+
+    sp = sub.add_parser(
+        "raw",
+        help="send a raw BIRD CLI command and print the reply verbatim",
+    )
+    sp.add_argument(
+        "command",
+        help="e.g. \"show route count\" or \"show route table master4\"",
+    )
+
+    return p
+
+
+# ---------------------------------------------------------------------------
+# Dispatcher
+# ---------------------------------------------------------------------------
+
+_DISPATCH = {
+    "status":        cmd_status,
+    "protocols":     cmd_protocols,
+    "tables":        cmd_tables,
+    "routes":        cmd_routes,
+    "route":         cmd_route,
+    "neighbor":      cmd_neighbor,
+    "config-check":  cmd_config_check,
+    "raw":           cmd_raw,
+}
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    try:
+        if args.cmd in {"community", "ext-community", "large-community"}:
+            rc = asyncio.run(cmd_community(args, method_name=args._method))
+        else:
+            handler = _DISPATCH[args.cmd]
+            rc = asyncio.run(handler(args))
+    except KeyboardInterrupt:
+        return 130
+    except FileNotFoundError as exc:
+        print(f"error: socket not found: {exc}", file=sys.stderr)
+        return 2
+    except PermissionError as exc:
+        print(f"error: permission denied: {exc}", file=sys.stderr)
+        return 2
+    except RsBirdError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    return rc or 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,292 @@
+0001 BIRD 3.1.2 ready.
+2002-Name       Proto      Table      State  Since         Info
+1002-kernel4    Kernel     master4    up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv4
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master4
+     Preference:     10
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         1 imported, 0 exported, 0 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:            131          0          0        130          0          0          1
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:           2112          2       2110          0        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+1002-kernel6    Kernel     master6    up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master6
+     Preference:     10
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         1 imported, 0 exported, 0 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:            131          0          0        130          0          0          1
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:           2140         14       2122          2        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+1002-static4    Static     master4    up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv4
+     State:          UP
+     Import state:   UP
+     Export state:   DOWN
+     Table:          master4
+     Preference:     200
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         0 imported, 0 exported, 0 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:              0          0          0          0          0          0          0
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:              0          0          0          0        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+1002-static6    Static     master6    up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   DOWN
+     Table:          master6
+     Preference:     200
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         0 imported, 0 exported, 0 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:              0          0          0          0          0          0          0
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:              0          0          0          0        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+1002-rs1_ipv4   BGP        ---        up     12:52:10.931  Established   
+1006-  Created:            12:52:07.480
+   BGP state:          Established
+     Neighbor address: 10.123.123.10
+     Neighbor AS:      65010
+     Local AS:         65231
+     Neighbor ID:      10.123.123.10
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   10.123.123.31
+     Hold timer:       159.646/240
+     Keepalive timer:  19.313/80
+     TX pending:       0 bytes
+     Send hold timer:  358.294/480
+   Channel ipv4
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master4
+     Preference:     100
+     Input filter:   reject_test_filtered_v4
+     Output filter:  ACCEPT
+     Routes:         14 imported, 1 filtered, 4 exported, 12 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:             18          0          1          1          0          0         16
+       Import withdraws:            0          0        ---          1        ---        ---          0
+       Export updates:             29         14          0          0        ---          0         15
+       Export withdraws:            0        ---        ---          0        ---        ---         11
+     BGP Next hop:   10.123.123.31
+     Pending 0 attribute sets with total 0 prefixes to send
+ 
+1002-rs2_ipv4   BGP        ---        up     12:52:10.883  Established   
+1006-  Created:            12:52:07.480
+   BGP state:          Established
+     Neighbor address: 10.123.123.20
+     Neighbor AS:      65020
+     Local AS:         65231
+     Neighbor ID:      10.123.123.20
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   10.123.123.31
+     Hold timer:       167.106/240
+     Keepalive timer:  74.635/80
+     TX pending:       0 bytes
+     Send hold timer:  473.887/480
+   Channel ipv4
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master4
+     Preference:     100
+     Input filter:   ACCEPT
+     Output filter:  ACCEPT
+     Routes:         15 imported, 12 exported, 3 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:             19          0          0          0          0          0         19
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:             31         16          0          0        ---          0         15
+       Export withdraws:            0        ---        ---          0        ---        ---          1
+     BGP Next hop:   10.123.123.31
+     Pending 0 attribute sets with total 0 prefixes to send
+ 
+1002-rs1_ipv6   BGP        ---        up     12:52:11.701  Established   
+1006-  Created:            12:52:07.480
+   BGP state:          Established
+     Neighbor address: 2001:db8:123::10
+     Neighbor AS:      65010
+     Local AS:         65231
+     Neighbor ID:      10.123.123.10
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   2001:db8:123::31
+     Hold timer:       152.021/240
+     Keepalive timer:  4.063/80
+     TX pending:       0 bytes
+     Send hold timer:  377.951/480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master6
+     Preference:     100
+     Input filter:   reject_test_filtered_v6
+     Output filter:  ACCEPT
+     Routes:         14 imported, 1 filtered, 4 exported, 12 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:             16          0          1          0          0          0         15
+       Import withdraws:            1          0        ---          1        ---        ---          1
+       Export updates:             27         12          0          0        ---          0         15
+       Export withdraws:            0        ---        ---          0        ---        ---         11
+     BGP Next hop:   2001:db8:123::31 fe80::f401:2dff:feb7:15c9
+     Pending 0 attribute sets with total 0 prefixes to send
+ 
+1002-rs2_ipv6   BGP        ---        up     12:52:10.822  Established   
+1006-  Created:            12:52:07.480
+   BGP state:          Established
+     Neighbor address: 2001:db8:123::20
+     Neighbor AS:      65020
+     Local AS:         65231
+     Neighbor ID:      10.123.123.20
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   2001:db8:123::31
+     Hold timer:       235.316/240
+     Keepalive timer:  29.282/80
+     TX pending:       0 bytes
+     Send hold timer:  441.182/480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master6
+     Preference:     100
+     Input filter:   ACCEPT
+     Output filter:  ACCEPT
+     Routes:         15 imported, 12 exported, 3 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:             33          0          0          1          0          0         32
+       Import withdraws:           14          0        ---          0        ---        ---         14
+       Export updates:             59         32          0          0        ---          0         27
+       Export withdraws:            0        ---        ---          0        ---        ---         15
+     BGP Next hop:   2001:db8:123::31 fe80::f401:2dff:feb7:15c9
+     Pending 0 attribute sets with total 0 prefixes to send
+ 
+1002-device1    Device     ---        up     12:52:07.480  
+1006-  Created:            12:52:07.480
+ 
+1002-direct4    Direct     ---        up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv4
+     State:          UP
+     Import state:   UP
+     Export state:   DOWN
+     Table:          master4
+     Preference:     240
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         1 imported, 0 exported, 1 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:              1          0          0          0          0          0          1
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:              0          0          0          0        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+1002-direct6    Direct     ---        up     12:52:07.480  
+1006-  Created:            12:52:07.480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   DOWN
+     Table:          master6
+     Preference:     240
+     Input filter:   ACCEPT
+     Output filter:  REJECT
+     Routes:         1 imported, 0 exported, 1 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:              1          0          0          0          0          0          1
+       Import withdraws:            0          0        ---          0        ---        ---          0
+       Export updates:              0          0          0          0        ---          0          0
+       Export withdraws:            0        ---        ---          0        ---        ---          0
+ 
+0000 

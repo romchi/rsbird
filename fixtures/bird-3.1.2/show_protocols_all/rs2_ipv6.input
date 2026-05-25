@@ -1,0 +1,49 @@
+0001 BIRD 3.1.2 ready.
+2002-Name       Proto      Table      State  Since         Info
+1002-rs2_ipv6   BGP        ---        up     12:52:10.822  Established   
+1006-  Created:            12:52:07.480
+   BGP state:          Established
+     Neighbor address: 2001:db8:123::20
+     Neighbor AS:      65020
+     Local AS:         65231
+     Neighbor ID:      10.123.123.20
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv6
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   2001:db8:123::31
+     Hold timer:       235.308/240
+     Keepalive timer:  29.273/80
+     TX pending:       0 bytes
+     Send hold timer:  441.174/480
+   Channel ipv6
+     State:          UP
+     Import state:   UP
+     Export state:   READY
+     Table:          master6
+     Preference:     100
+     Input filter:   ACCEPT
+     Output filter:  ACCEPT
+     Routes:         15 imported, 12 exported, 3 preferred
+     Route change stats:     received   rejected   filtered    ignored   RX limit      limit   accepted
+       Import updates:             33          0          0          1          0          0         32
+       Import withdraws:           14          0        ---          0        ---        ---         14
+       Export updates:             59         32          0          0        ---          0         27
+       Export withdraws:            0        ---        ---          0        ---        ---         15
+     BGP Next hop:   2001:db8:123::31 fe80::f401:2dff:feb7:15c9
+     Pending 0 attribute sets with total 0 prefixes to send
+ 
+0000 

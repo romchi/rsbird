@@ -1,0 +1,43 @@
+0001 BIRD 2.0.8 ready.
+2002-Name       Proto      Table      State  Since         Info
+1002-rs1_ipv4   BGP        ---        up     12:52:11.674  Established   
+1006-  BGP state:          Established
+     Neighbor address: 10.123.123.10
+     Neighbor AS:      65010
+     Local AS:         65208
+     Neighbor ID:      10.123.123.10
+     Local capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Neighbor capabilities
+       Multiprotocol
+         AF announced: ipv4
+       Route refresh
+       Graceful restart
+       4-octet AS numbers
+       Enhanced refresh
+       Long-lived graceful restart
+     Session:          external AS4
+     Source address:   10.123.123.208
+     Hold timer:       166.395/240
+     Keepalive timer:  43.018/80
+   Channel ipv4
+     State:          UP
+     Table:          master4
+     Preference:     100
+     Input filter:   reject_test_filtered_v4
+     Output filter:  ACCEPT
+     Routes:         15 imported, 1 filtered, 4 exported, 12 preferred
+     Route change stats:     received   rejected   filtered    ignored   accepted
+       Import updates:             16          0          1          0         15
+       Import withdraws:            0          0        ---          1          0
+       Export updates:             27         12          0        ---         15
+       Export withdraws:            0        ---        ---        ---         11
+     BGP Next hop:   10.123.123.208
+ 
+0000 

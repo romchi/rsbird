@@ -1,0 +1,11 @@
+0001 BIRD 2.0.8 ready.
+1007-Table master4:
+ 10.52.0.0/24         unicast [rs2_ipv4 12:52:10.964] * (100) [AS65010i]
+ 	via 10.123.123.20 on eth0
+1008-	Type: BGP univ
+1012-	BGP.origin: IGP
+ 	BGP.as_path: 65020 65010
+ 	BGP.next_hop: 10.123.123.20
+ 	BGP.local_pref: 100
+ 	BGP.community: (65010,666)
+0000 

@@ -1,0 +1,59 @@
+0001 BIRD 3.1.2 ready.
+1007-Table master4:
+ 10.123.123.0/24      unicast [direct4 12:52:07.487] * (240)
+ 	dev eth0
+1012-	preference: 240
+ 	source: device
+1008-	Internal route handling values: 2L 8G 0S id 1
+1007-                     unicast [rs2_ipv4 12:52:10.886] (100) [AS65020i]
+ 	via 10.123.123.20 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 10.123.123.20
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65020
+ 	bgp_next_hop: 10.123.123.20
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 12G 0S id 4
+1007-                     unicast [rs1_ipv4 12:52:10.976] (100) [AS65010i]
+ 	via 10.123.123.10 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 10.123.123.10
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65010
+ 	bgp_next_hop: 10.123.123.10
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 13G 0S id 19
+1007-0.0.0.0/0            unicast [rs1_ipv4 12:52:11.224] * (100) [AS65010i]
+ 	via 10.123.123.10 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 10.123.123.10
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65010
+ 	bgp_next_hop: 10.123.123.10
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 13G 0S id 3
+1007-                     unicast [rs2_ipv4 12:52:11.182] (100) [AS65010i]
+ 	via 10.123.123.20 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 10.123.123.20
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65020 65010
+ 	bgp_next_hop: 10.123.123.20
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 12G 0S id 36
+1007-                     unicast [kernel4 12:52:08.482] (10)
+ 	via 10.123.123.1 on eth0
+1012-	preference: 10
+ 	source: inherit
+ 	krt_source: 3
+ 	krt_metric: 0
+1008-	Internal route handling values: 0L 2G 131S id 2
+0000 

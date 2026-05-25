@@ -1,0 +1,155 @@
+{
+  "captured_at": "2026-05-21T16:49:42",
+  "entries": [
+    {
+      "file": "show_status/default.input",
+      "command": "show status",
+      "socket": "single",
+      "bytes": 226
+    },
+    {
+      "file": "show_symbols/default.input",
+      "command": "show symbols",
+      "socket": "single",
+      "bytes": 839
+    },
+    {
+      "file": "show_protocols/default.input",
+      "command": "show protocols",
+      "socket": "single",
+      "bytes": 405
+    },
+    {
+      "file": "show_protocols_all/default.input",
+      "command": "show protocols all",
+      "socket": "single",
+      "bytes": 4367
+    },
+    {
+      "file": "show_protocols_all/rs1_ipv4.input",
+      "command": "show protocols all rs1_ipv4",
+      "socket": "single",
+      "bytes": 1063
+    },
+    {
+      "file": "show_protocols_all/rs2_ipv4.input",
+      "command": "show protocols all rs2_ipv4",
+      "socket": "single",
+      "bytes": 1037
+    },
+    {
+      "file": "show_route_table/master.input",
+      "command": "show route table master",
+      "socket": "single",
+      "bytes": 2678
+    },
+    {
+      "file": "show_route_for/0.0.0.0_0.input",
+      "command": "show route for 0.0.0.0/0",
+      "socket": "single",
+      "bytes": 270
+    },
+    {
+      "file": "show_route_for/0.0.0.0_0.all.input",
+      "command": "show route for 0.0.0.0/0 all",
+      "socket": "single",
+      "bytes": 607
+    },
+    {
+      "file": "show_route_for/10.2.2.0_24.input",
+      "command": "show route for 10.2.2.0/24",
+      "socket": "single",
+      "bytes": 201
+    },
+    {
+      "file": "show_route_for/10.2.2.0_24.all.input",
+      "command": "show route for 10.2.2.0/24 all",
+      "socket": "single",
+      "bytes": 459
+    },
+    {
+      "file": "show_route_for/10.3.3.0_24.input",
+      "command": "show route for 10.3.3.0/24",
+      "socket": "single",
+      "bytes": 201
+    },
+    {
+      "file": "show_route_for/10.3.3.0_24.all.input",
+      "command": "show route for 10.3.3.0/24 all",
+      "socket": "single",
+      "bytes": 459
+    },
+    {
+      "file": "show_route_for/10.0.0.0_24.input",
+      "command": "show route for 10.0.0.0/24",
+      "socket": "single",
+      "bytes": 201
+    },
+    {
+      "file": "show_route_for/10.0.0.0_24.all.input",
+      "command": "show route for 10.0.0.0/24 all",
+      "socket": "single",
+      "bytes": 459
+    },
+    {
+      "file": "show_route_for/10.1.1.0_24.input",
+      "command": "show route for 10.1.1.0/24",
+      "socket": "single",
+      "bytes": 201
+    },
+    {
+      "file": "show_route_for/10.1.1.0_24.all.input",
+      "command": "show route for 10.1.1.0/24 all",
+      "socket": "single",
+      "bytes": 459
+    },
+    {
+      "file": "show_route_for/10.6.0.0_24.input",
+      "command": "show route for 10.6.0.0/24",
+      "socket": "single",
+      "bytes": 118
+    },
+    {
+      "file": "show_route_for/10.6.0.0_24.all.input",
+      "command": "show route for 10.6.0.0/24 all",
+      "socket": "single",
+      "bytes": 316
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv4.input",
+      "command": "show route protocol rs1_ipv4",
+      "socket": "single",
+      "bytes": 1302
+    },
+    {
+      "file": "show_route_export/rs1_ipv4.input",
+      "command": "show route export rs1_ipv4",
+      "socket": "single",
+      "bytes": 344
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv4.filtered.input",
+      "command": "show route protocol rs1_ipv4 filtered",
+      "socket": "single",
+      "bytes": 116
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv4.input",
+      "command": "show route protocol rs2_ipv4",
+      "socket": "single",
+      "bytes": 1284
+    },
+    {
+      "file": "show_route_export/rs2_ipv4.input",
+      "command": "show route export rs2_ipv4",
+      "socket": "single",
+      "bytes": 1024
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv4.filtered.input",
+      "command": "show route protocol rs2_ipv4 filtered",
+      "socket": "single",
+      "bytes": 29
+    }
+  ]
+}

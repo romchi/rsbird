@@ -1,0 +1,59 @@
+0001 BIRD 3.1.2 ready.
+1007-Table master6:
+ 2001:db8:123::/64    unicast [direct6 12:52:07.487] * (240)
+ 	dev eth0
+1012-	preference: 240
+ 	source: device
+1008-	Internal route handling values: 2L 9G 0S id 1
+1007-                     unicast [rs2_ipv6 12:52:10.842] (100) [AS65020i]
+ 	via 2001:db8:123::20 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 2001:db8:123::20
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65020
+ 	bgp_next_hop: 2001:db8:123::20 fe80::5c5e:f7ff:fef9:c364
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 11G 0S id 4
+1007-                     unicast [rs1_ipv6 12:52:11.704] (100) [AS65010i]
+ 	via 2001:db8:123::10 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 2001:db8:123::10
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65010
+ 	bgp_next_hop: 2001:db8:123::10 fe80::d47c:36ff:fe35:dbf9
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 14G 0S id 27
+1007-::/0                 unicast [rs1_ipv6 12:52:11.702] * (100) [AS65068i]
+ 	via 2001:db8:123::10 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 2001:db8:123::10
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65010 65068
+ 	bgp_next_hop: 2001:db8:123::10 fe80::d47c:36ff:fe35:dbf9
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 14G 0S id 3
+1007-                     unicast [rs2_ipv6 12:52:11.064] (100) [AS65068i]
+ 	via 2001:db8:123::20 on eth0
+1012-	preference: 100
+ 	igp_metric: 0
+ 	from: 2001:db8:123::20
+ 	source: BGP
+ 	bgp_origin: IGP
+ 	bgp_path: 65020 65068
+ 	bgp_next_hop: 2001:db8:123::20 fe80::5c5e:f7ff:fef9:c364
+ 	bgp_local_pref: 100
+1008-	Internal route handling values: 0L 11G 0S id 7
+1007-                     unicast [kernel6 12:52:08.482] (10)
+ 	via 2001:db8:123::1 on eth0
+1012-	preference: 10
+ 	source: inherit
+ 	krt_source: 3
+ 	krt_metric: 1024
+1008-	Internal route handling values: 1024L 10G 131S id 2
+0000 

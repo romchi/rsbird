@@ -1,0 +1,245 @@
+{
+  "captured_at": "2026-05-21T17:01:09",
+  "entries": [
+    {
+      "file": "show_status/default.input",
+      "command": "show status",
+      "bytes": 265
+    },
+    {
+      "file": "show_symbols/default.input",
+      "command": "show symbols",
+      "bytes": 1534
+    },
+    {
+      "file": "show_protocols/default.input",
+      "command": "show protocols",
+      "bytes": 769
+    },
+    {
+      "file": "show_protocols_all/default.input",
+      "command": "show protocols all",
+      "bytes": 10195
+    },
+    {
+      "file": "show_protocols_all/rs1_ipv4.input",
+      "command": "show protocols all rs1_ipv4",
+      "bytes": 1575
+    },
+    {
+      "file": "show_protocols_all/rs2_ipv4.input",
+      "command": "show protocols all rs2_ipv4",
+      "bytes": 1546
+    },
+    {
+      "file": "show_protocols_all/rs1_ipv6.input",
+      "command": "show protocols all rs1_ipv6",
+      "bytes": 1610
+    },
+    {
+      "file": "show_protocols_all/rs2_ipv6.input",
+      "command": "show protocols all rs2_ipv6",
+      "bytes": 1581
+    },
+    {
+      "file": "show_route_count/master4.input",
+      "command": "show route table master4 count",
+      "bytes": 83
+    },
+    {
+      "file": "show_route_table/master4.input",
+      "command": "show route table master4",
+      "bytes": 3206
+    },
+    {
+      "file": "show_route_count/master6.input",
+      "command": "show route table master6 count",
+      "bytes": 83
+    },
+    {
+      "file": "show_route_table/master6.input",
+      "command": "show route table master6",
+      "bytes": 3299
+    },
+    {
+      "file": "show_route_for/0.0.0.0_0.input",
+      "command": "show route for 0.0.0.0/0",
+      "bytes": 334
+    },
+    {
+      "file": "show_route_for/0.0.0.0_0.all.input",
+      "command": "show route for 0.0.0.0/0 all",
+      "bytes": 647
+    },
+    {
+      "file": "show_route_for/10.123.123.0_24.input",
+      "command": "show route for 10.123.123.0/24",
+      "bytes": 319
+    },
+    {
+      "file": "show_route_for/10.123.123.0_24.all.input",
+      "command": "show route for 10.123.123.0/24 all",
+      "bytes": 583
+    },
+    {
+      "file": "show_route_for/10.6.0.0_24.input",
+      "command": "show route for 10.6.0.0/24",
+      "bytes": 150
+    },
+    {
+      "file": "show_route_for/10.6.0.0_24.all.input",
+      "command": "show route for 10.6.0.0/24 all",
+      "bytes": 340
+    },
+    {
+      "file": "show_route_for/10.52.0.0_24.input",
+      "command": "show route for 10.52.0.0/24",
+      "bytes": 150
+    },
+    {
+      "file": "show_route_for/10.52.0.0_24.all.input",
+      "command": "show route for 10.52.0.0/24 all",
+      "bytes": 301
+    },
+    {
+      "file": "show_route_for/10.4.4.0_24.input",
+      "command": "show route for 10.4.4.0/24",
+      "bytes": 249
+    },
+    {
+      "file": "show_route_for/10.4.4.0_24.all.input",
+      "command": "show route for 10.4.4.0/24 all",
+      "bytes": 491
+    },
+    {
+      "file": "show_route_for/10.9.0.0_24.input",
+      "command": "show route for 10.9.0.0/24",
+      "bytes": 249
+    },
+    {
+      "file": "show_route_for/10.9.0.0_24.all.input",
+      "command": "show route for 10.9.0.0/24 all",
+      "bytes": 747
+    },
+    {
+      "file": "show_route_for/_0.input",
+      "command": "show route for ::/0",
+      "bytes": 343
+    },
+    {
+      "file": "show_route_for/_0.all.input",
+      "command": "show route for ::/0 all",
+      "bytes": 723
+    },
+    {
+      "file": "show_route_for/2001_db8_10_48.input",
+      "command": "show route for 2001:db8:10::/48",
+      "bytes": 255
+    },
+    {
+      "file": "show_route_for/2001_db8_10_48.all.input",
+      "command": "show route for 2001:db8:10::/48 all",
+      "bytes": 579
+    },
+    {
+      "file": "show_route_for/2001_db8_9_48.input",
+      "command": "show route for 2001:db8:9::/48",
+      "bytes": 255
+    },
+    {
+      "file": "show_route_for/2001_db8_9_48.all.input",
+      "command": "show route for 2001:db8:9::/48 all",
+      "bytes": 755
+    },
+    {
+      "file": "show_route_for/2001_db8_8_48.input",
+      "command": "show route for 2001:db8:8::/48",
+      "bytes": 255
+    },
+    {
+      "file": "show_route_for/2001_db8_8_48.all.input",
+      "command": "show route for 2001:db8:8::/48 all",
+      "bytes": 691
+    },
+    {
+      "file": "show_route_for/2001_db8_1_48.input",
+      "command": "show route for 2001:db8:1::/48",
+      "bytes": 255
+    },
+    {
+      "file": "show_route_for/2001_db8_1_48.all.input",
+      "command": "show route for 2001:db8:1::/48 all",
+      "bytes": 555
+    },
+    {
+      "file": "show_route_for/2001_db8_48.input",
+      "command": "show route for 2001:db8::/48",
+      "bytes": 255
+    },
+    {
+      "file": "show_route_for/2001_db8_48.all.input",
+      "command": "show route for 2001:db8::/48 all",
+      "bytes": 555
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv4.input",
+      "command": "show route protocol rs1_ipv4",
+      "bytes": 1558
+    },
+    {
+      "file": "show_route_export/rs1_ipv4.input",
+      "command": "show route export rs1_ipv4",
+      "bytes": 424
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv4.filtered.input",
+      "command": "show route protocol rs1_ipv4 filtered",
+      "bytes": 148
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv4.input",
+      "command": "show route protocol rs2_ipv4",
+      "bytes": 1540
+    },
+    {
+      "file": "show_route_export/rs2_ipv4.input",
+      "command": "show route export rs2_ipv4",
+      "bytes": 1232
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv4.filtered.input",
+      "command": "show route protocol rs2_ipv4 filtered",
+      "bytes": 29
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv6.input",
+      "command": "show route protocol rs1_ipv6",
+      "bytes": 1603
+    },
+    {
+      "file": "show_route_export/rs1_ipv6.input",
+      "command": "show route export rs1_ipv6",
+      "bytes": 433
+    },
+    {
+      "file": "show_route_protocol/rs1_ipv6.filtered.input",
+      "command": "show route protocol rs1_ipv6 filtered",
+      "bytes": 151
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv6.input",
+      "command": "show route protocol rs2_ipv6",
+      "bytes": 1585
+    },
+    {
+      "file": "show_route_export/rs2_ipv6.input",
+      "command": "show route export rs2_ipv6",
+      "bytes": 1265
+    },
+    {
+      "file": "show_route_protocol/rs2_ipv6.filtered.input",
+      "command": "show route protocol rs2_ipv6 filtered",
+      "bytes": 29
+    }
+  ]
+}

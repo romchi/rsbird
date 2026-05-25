@@ -1,0 +1,87 @@
+0001 BIRD 1.6.8 ready.
+2002-name     proto    table    state  since       info
+1002-device1  Device   master   up     12:52:06    
+1006-  Preference:     240
+   Input filter:   ACCEPT
+   Output filter:  REJECT
+   Routes:         0 imported, 0 exported, 0 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:              0          0          0          0          0
+     Import withdraws:            0          0        ---          0          0
+     Export updates:              0          0          0        ---          0
+     Export withdraws:            0        ---        ---        ---          0
+ 
+1002-direct1  Direct   master   up     12:52:06    
+1006-  Preference:     240
+   Input filter:   ACCEPT
+   Output filter:  REJECT
+   Routes:         1 imported, 0 exported, 1 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:              1          0          0          0          1
+     Import withdraws:            0          0        ---          0          0
+     Export updates:              0          0          0        ---          0
+     Export withdraws:            0        ---        ---        ---          0
+ 
+1002-kernel1  Kernel   master   up     12:52:06    
+1006-  Preference:     10
+   Input filter:   ACCEPT
+   Output filter:  ACCEPT
+   Routes:         1 imported, 15 exported, 0 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:              1          0          0          0          1
+     Import withdraws:            0          0        ---          0          0
+     Export updates:             33          5          0        ---         28
+     Export withdraws:            0        ---        ---        ---          2
+ 
+1002-static1  Static   master   up     12:52:06    
+1006-  Preference:     200
+   Input filter:   ACCEPT
+   Output filter:  ACCEPT
+   Routes:         0 imported, 0 exported, 0 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:              0          0          0          0          0
+     Import withdraws:            0          0        ---          0          0
+     Export updates:              0          0          0        ---          0
+     Export withdraws:            0        ---        ---        ---          0
+ 
+1002-rs1_ipv4 BGP      master   up     12:52:10    Established   
+1006-  Preference:     100
+   Input filter:   reject_test_filtered
+   Output filter:  ACCEPT
+   Routes:         15 imported, 1 filtered, 4 exported, 12 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:             18          0          1          1         16
+     Import withdraws:            1          0        ---          1          1
+     Export updates:             32         13          0        ---         19
+     Export withdraws:            0        ---        ---        ---         12
+   BGP state:          Established
+     Neighbor address: 10.123.123.10
+     Neighbor AS:      65010
+     Neighbor ID:      10.123.123.10
+     Neighbor caps:    refresh enhanced-refresh restart-aware llgr-aware AS4
+     Session:          external AS4
+     Source address:   10.123.123.68
+     Hold timer:       209/240
+     Keepalive timer:  67/80
+ 
+1002-rs2_ipv4 BGP      master   up     12:52:10    Established   
+1006-  Preference:     100
+   Input filter:   ACCEPT
+   Output filter:  ACCEPT
+   Routes:         15 imported, 12 exported, 3 preferred
+   Route change stats:     received   rejected   filtered    ignored   accepted
+     Import updates:             16          0          0          0         16
+     Import withdraws:            2          0        ---          1          1
+     Export updates:             32         16          0        ---         16
+     Export withdraws:            0        ---        ---        ---          2
+   BGP state:          Established
+     Neighbor address: 10.123.123.20
+     Neighbor AS:      65020
+     Neighbor ID:      10.123.123.20
+     Neighbor caps:    refresh enhanced-refresh restart-aware llgr-aware AS4
+     Session:          external AS4
+     Source address:   10.123.123.68
+     Hold timer:       172/240
+     Keepalive timer:  74/80
+ 
+0000 

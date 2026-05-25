@@ -1,0 +1,42 @@
+0001 BIRD 1.6.8 ready.
+1010-ips_site	constant
+ master  	routing table
+ ipt_unspec	constant
+ ipp_xorp	constant
+ rs1_ipv6	protocol
+ rs2_ipv6	protocol
+ ipp_dhcp	constant
+ ipp_bird	constant
+ ipp_boot	constant
+ ipt_main	constant
+ RTR_ASN 	constant
+ ips_link	constant
+ ipp_isis	constant
+ static1 	protocol
+ ips_global	constant
+ ipp_kernel	constant
+ ips_host	constant
+ ips_nowhere	constant
+ ipp_dnrouted	constant
+ kernel1 	protocol
+ ipp_ntk 	constant
+ ipp_mrt 	constant
+ ipr_cosmos	constant
+ ipp_babel	constant
+ ipp_redirect	constant
+ ipt_local	constant
+ ipp_bgp 	constant
+ ipp_zebra	constant
+ ipp_gated	constant
+ ipp_eigrp	constant
+ ipp_rip 	constant
+ device1 	protocol
+ direct1 	protocol
+ RTR_IP  	constant
+ ipt_default	constant
+ ipp_static	constant
+ reject_test_filtered	filter
+ ipp_ra  	constant
+ ipp_ospf	constant
+ ipp_unspec	constant
+0000 
