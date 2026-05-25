@@ -1,0 +1,33 @@
+0001 BIRD 2.0.8 ready.
+1007-Table master6:
+ ::/0                 unicast [rs2_ipv6 12:52:11.179] (100) [AS65068i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:10::/48     unicast [rs2_ipv6 12:52:11.179] * (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:9::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:8::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:1::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8::/48        unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:3::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:2::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:5::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:4::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:7::/48      unicast [rs2_ipv6 12:52:11.179] (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:51::/48     unicast [rs2_ipv6 12:52:11.179] * (100) [AS65020i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:50::/48     unicast [rs2_ipv6 12:52:11.179] (100) [AS65020i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:52::/48     unicast [rs2_ipv6 12:52:11.179] * (100) [AS65010i]
+ 	via 2001:db8:123::20 on eth0
+ 2001:db8:123::/64    unicast [rs2_ipv6 12:52:11.179] (100) [AS65020i]
+ 	via 2001:db8:123::20 on eth0
+0000 

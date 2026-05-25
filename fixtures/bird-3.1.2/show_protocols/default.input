@@ -1,0 +1,14 @@
+0001 BIRD 3.1.2 ready.
+2002-Name       Proto      Table      State  Since         Info
+1002-kernel4    Kernel     master4    up     12:52:07.480  
+ kernel6    Kernel     master6    up     12:52:07.480  
+ static4    Static     master4    up     12:52:07.480  
+ static6    Static     master6    up     12:52:07.480  
+ rs1_ipv4   BGP        ---        up     12:52:10.931  Established   
+ rs2_ipv4   BGP        ---        up     12:52:10.883  Established   
+ rs1_ipv6   BGP        ---        up     12:52:11.701  Established   
+ rs2_ipv6   BGP        ---        up     12:52:10.822  Established   
+ device1    Device     ---        up     12:52:07.480  
+ direct4    Direct     ---        up     12:52:07.480  
+ direct6    Direct     ---        up     12:52:07.480  
+0000 

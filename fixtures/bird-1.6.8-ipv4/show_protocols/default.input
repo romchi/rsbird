@@ -1,0 +1,9 @@
+0001 BIRD 1.6.8 ready.
+2002-name     proto    table    state  since       info
+1002-device1  Device   master   up     12:52:06    
+ direct1  Direct   master   up     12:52:06    
+ kernel1  Kernel   master   up     12:52:06    
+ static1  Static   master   up     12:52:06    
+ rs1_ipv4 BGP      master   up     12:52:10    Established   
+ rs2_ipv4 BGP      master   up     12:52:10    Established   
+0000 

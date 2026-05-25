@@ -1,0 +1,6 @@
+0001 BIRD 1.6.8 ready.
+1007-::/0               via 2001:db8:123::1 on eth0 [kernel1 12:52:06] * (10)
+1008-	Type: inherit unicast univ
+1012-	Kernel.source: 3
+ 	Kernel.metric: 1024
+0000 

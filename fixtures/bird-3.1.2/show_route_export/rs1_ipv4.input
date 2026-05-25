@@ -1,0 +1,11 @@
+0001 BIRD 3.1.2 ready.
+1007-Table master4:
+ 10.123.123.0/24      unicast [direct4 12:52:07.487] * (240)
+ 	dev eth0
+ 10.51.0.0/24         unicast [rs2_ipv4 12:52:10.887] * (100) [AS65020i]
+ 	via 10.123.123.20 on eth0
+ 10.10.0.0/24         unicast [rs2_ipv4 12:52:10.928] * (100) [AS65010i]
+ 	via 10.123.123.20 on eth0
+ 10.52.0.0/24         unicast [rs2_ipv4 12:52:10.928] * (100) [AS65010i]
+ 	via 10.123.123.20 on eth0
+0000 

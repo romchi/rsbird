@@ -1,0 +1,16 @@
+0001 BIRD 1.6.8 ready.
+1007-2001:db8:123::/64  dev eth0 [direct1 12:52:06] * (240)
+1008-	Type: device unicast univ
+1007-                   via 2001:db8:123::10 on eth0 [rs1_ipv6 12:52:10] (100) [AS65010i]
+1008-	Type: BGP unicast univ
+1012-	BGP.origin: IGP
+ 	BGP.as_path: 65010
+ 	BGP.next_hop: 2001:db8:123::10 fe80::d47c:36ff:fe35:dbf9
+ 	BGP.local_pref: 100
+1007-                   via 2001:db8:123::20 on eth0 [rs2_ipv6 12:52:10] (100) [AS65020i]
+1008-	Type: BGP unicast univ
+1012-	BGP.origin: IGP
+ 	BGP.as_path: 65020
+ 	BGP.next_hop: 2001:db8:123::20 fe80::5c5e:f7ff:fef9:c364
+ 	BGP.local_pref: 100
+0000 

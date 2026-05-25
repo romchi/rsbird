@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rsbird"
+version = "0.1.0"
+description = "Async Python client and parsers for the BIRD route-server control socket."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Giganet" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Framework :: AsyncIO",
+    "Topic :: System :: Networking",
+]
+dependencies = []  # stdlib only
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<10",
+    "pytest-asyncio>=0.24,<2",
+    "ruff>=0.6,<1",
+]
+
+# CLI is a standalone script — not part of the importable library package.
+# setuptools copies it verbatim into the install's bin/ directory, so the
+# shebang line at the top is what ends up on disk (similar to how ``birdc``
+# is a standalone binary, not a library subroutine).
+[tool.setuptools]
+script-files = ["bin/rsbird"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["rsbird*"]
+exclude = ["tests*", "lab*", "tools*", "fixtures*", "collected_info*"]
+
+[tool.setuptools.package-data]
+rsbird = ["py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = [".venv", "venv", "fixtures", "collected_info", "lab"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008"]
