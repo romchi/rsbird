@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """``rsbird`` — standalone CLI for the BIRD route-server control socket.
 
-This is the BIRD analogue of ``birdc``: a thin command-line front-end that
-talks to BIRD via the :mod:`rsbird` Python library. It is intentionally not
-part of the library package — the library is what you ``import``, this
-script is what you run.
+This is the BIRD analogue of ``birdc``: a thin command-line front-end that talks to BIRD via the :mod:`rsbird` Python library. It is intentionally not
+part of the library package — the library is what you ``import``, this script is what you run.
 """
 from __future__ import annotations
 
@@ -17,10 +15,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Sequence
 
-# Run-from-source bootstrap: invoked as ``./bin/rsbird`` from a checkout,
-# Python only puts ``bin/`` on sys.path — not the repo root that holds the
-# ``rsbird/`` package. Add it when the sibling source package is present.
-# This is a no-op once installed (site-packages already provides rsbird).
+# Run-from-source bootstrap: invoked as ``./bin/rsbird`` from a checkout, Python only puts ``bin/`` on sys.path — not the repo root that holds the
+# ``rsbird/`` package. Add it when the sibling source package is present. This is a no-op once installed (site-packages already provides rsbird).
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 if (_REPO_ROOT / "rsbird" / "__init__.py").is_file():
     sys.path.insert(0, str(_REPO_ROOT))
@@ -104,12 +100,52 @@ def fmt_protocols(protocols, *, brief: bool) -> None:
     _print_table(cols, rows)
 
 
-def fmt_routes(routes, *, detail: bool) -> None:
-    if detail:
-        for route in routes:
-            _print_route_detail(route)
-            print()
-        return
+def _as_hop(hop) -> str:
+    """Render one AS-path element — int, or an AS_SET as ``{a,b,c}``."""
+    if isinstance(hop, (set, frozenset)):
+        return "{" + ",".join(str(a) for a in sorted(hop)) + "}"
+    return str(hop)
+
+
+def _peer_as(bgp) -> str:
+    """Nearest (leftmost) hop of the AS-path — i.e. the neighbour's AS."""
+    if bgp is None or not bgp.as_path:
+        return ""
+    return _as_hop(bgp.as_path[0])
+
+
+def _all_communities(bgp) -> list[str]:
+    """Every community on the route — standard, large and extended — as text."""
+    if bgp is None:
+        return []
+    return [str(c) for c in (*bgp.communities, *bgp.large_communities, *bgp.ext_communities)]
+
+
+def fmt_routes_table(routes) -> None:
+    """Rich table: origin/peer AS, peer IP/name, and all communities."""
+    rows = [
+        (
+            "*" if r.best else " ",
+            r.prefix,
+            str(r.origin_as) if r.origin_as is not None else "",
+            _peer_as(r.bgp),
+            r.via or "",
+            r.protocol or "",
+            _fmt_dt(r.learned),
+            str(r.preference) if r.preference is not None else "",
+            " ".join(_all_communities(r.bgp)),
+        )
+        for r in routes
+    ]
+    _print_table(
+        ["", "PREFIX", "ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME",
+         "LEARNED", "PREF", "COMMUNITY"],
+        rows,
+    )
+
+
+def fmt_routes_brief(routes) -> None:
+    """Fast summary table — what a bare ``show route`` (no detail) yields."""
     rows = [
         (
             "*" if r.best else " ",
@@ -122,7 +158,24 @@ def fmt_routes(routes, *, detail: bool) -> None:
         )
         for r in routes
     ]
-    _print_table(["", "PREFIX", "ORIGIN AS", "PEER", "SOURCE", "LEARNED", "PREF"], rows)
+    _print_table(
+        ["", "PREFIX", "ORIGIN_AS", "PEER_IP", "PEER_NAME", "LEARNED", "PREF"],
+        rows,
+    )
+
+
+def render_routes(routes, *, json_out: bool, detail: bool, brief: bool) -> None:
+    """Pick the route renderer: JSON / verbose block / brief table / rich table."""
+    if json_out:
+        _print_json([r.to_dict() for r in routes])
+    elif detail:
+        for route in routes:
+            _print_route_detail(route)
+            print()
+    elif brief:
+        fmt_routes_brief(routes)
+    else:
+        fmt_routes_table(routes)
 
 
 def _print_route_detail(r) -> None:
@@ -142,8 +195,13 @@ def _print_route_detail(r) -> None:
     b = r.bgp
     if b.origin:
         print(f"    Origin:       {b.origin}")
+    peer_as = _peer_as(b)
+    if peer_as:
+        print(f"    Peer AS:      {peer_as}")
+    if r.origin_as is not None:
+        print(f"    Origin AS:    {r.origin_as}")
     if b.as_path:
-        print(f"    AS path:      {' '.join(str(x) for x in b.as_path)}")
+        print(f"    AS path:      {' '.join(_as_hop(x) for x in b.as_path)}")
     if b.next_hop:
         print(f"    Next-hop:     {' '.join(b.next_hop)}")
     if b.local_pref is not None:
@@ -222,27 +280,26 @@ async def cmd_tables(args) -> int:
 
 
 async def cmd_routes(args) -> int:
+    # The rich table needs per-route BGP attributes (peer AS, communities),
+    # so fetch detail unless the user explicitly asked for the fast --brief
+    # summary. ``-d`` keeps detail and switches to the verbose block view.
+    fetch_detail = not args.brief
     async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
         routes = await bird.routes(
             table=args.table, prefix=args.prefix, protocol=args.protocol,
-            where=args.where, detail=args.detail, best=args.best,
+            where=args.where, detail=fetch_detail, best=args.best,
             filtered=args.filtered,
         )
-    if args.json:
-        _print_json([r.to_dict() for r in routes])
-    else:
-        fmt_routes(routes, detail=args.detail)
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief)
     return 0
 
 
 async def cmd_route(args) -> int:
     """Shortcut: ``rsbird route <prefix>`` -> ``rsbird routes -p <prefix>``."""
+    fetch_detail = not args.brief
     async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
-        routes = await bird.routes(prefix=args.prefix, detail=args.detail)
-    if args.json:
-        _print_json([r.to_dict() for r in routes])
-    else:
-        fmt_routes(routes, detail=args.detail)
+        routes = await bird.routes(prefix=args.prefix, detail=fetch_detail)
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief)
     return 0
 
 
@@ -261,15 +318,13 @@ async def cmd_neighbor(args) -> int:
 
 
 async def cmd_community(args, *, method_name: str) -> int:
+    # Always fetch detail so the rich table (and the peer-AS / community columns) is populated — community lookups are already a narrow filter.
     async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
         method = getattr(bird, method_name)
         routes = await method(
-            args.value, table=args.table, detail=args.detail, best=args.best,
+            args.value, table=args.table, detail=True, best=args.best,
         )
-    if args.json:
-        _print_json([r.to_dict() for r in routes])
-    else:
-        fmt_routes(routes, detail=args.detail)
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=False)
     return 0
 
 
@@ -343,11 +398,17 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--filtered", action="store_true",
                     help="only filtered (rejected by import) routes")
     sp.add_argument("--detail", "-d", action="store_true",
-                    help="include BGP attribute block per route")
+                    help="verbose per-route block instead of the table")
+    sp.add_argument("--brief", action="store_true",
+                    help="fast summary table (no detail fetch — drops "
+                         "PEER_AS and COMMUNITY columns)")
 
     sp = sub.add_parser("route", help="show route for a prefix (shortcut)")
     sp.add_argument("prefix", help="IP or prefix to look up")
-    sp.add_argument("--detail", "-d", action="store_true")
+    sp.add_argument("--detail", "-d", action="store_true",
+                    help="verbose per-route block instead of the table")
+    sp.add_argument("--brief", action="store_true",
+                    help="fast summary table (no detail fetch)")
 
     sp = sub.add_parser("neighbor", help="show one BGP peer by its address")
     sp.add_argument("ip", help="neighbor IP address")

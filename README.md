@@ -49,23 +49,39 @@ NAME      PROTO  STATE  INFO
 rs1_ipv4  BGP    up     Established
 rs2_ipv4  BGP    up     Established
 
-$ rsbird -s /run/bird/bird.ctl routes -t master4 -d -p 10.5.5.0
-* 10.5.5.0/24  via 10.0.0.10  on eth0  [rs1_ipv4 2026-05-21 12:00:00]  (100)  AS65010
-    Type:         BGP unicast
+$ rsbird -s /run/bird/bird.ctl routes -t giganet
+   PREFIX          ORIGIN_AS  PEER_AS  PEER_IP       PEER_NAME  LEARNED              PREF  COMMUNITY
+-  --------------  ---------  -------  ------------  ---------  -------------------  ----  ----------------------------
+*  143.0.143.0/24  264009     6939     185.1.62.230  rs1_ipv4   2026-05-21 12:52:11  100   0:13335 65535:65281 264009:1:2
+   143.0.143.0/24  264009     7642     185.1.62.231  rs2_ipv4   2026-05-21 12:52:10  100   0:13335
+
+# the rich table fetches detail; --brief is the fast path (drops PEER_AS / COMMUNITY), -d switches to the verbose per-route block
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -p 143.0.143.1 -d
+* 143.0.143.0/24  via 185.1.62.230  on eth0  [rs1_ipv4 2026-05-21 12:52:11]  (100)  AS264009
+    Type:         BGP unicast univ
     Origin:       IGP
-    AS path:      65010
-    Community:    0:13335 65010:1
+    Peer AS:      6939
+    Origin AS:    264009
+    AS path:      6939 264409 53062 264009
+    Community:    0:13335 65535:65281
 
 $ rsbird -s /run/bird/bird.ctl community 0:13335 -t master4
 $ rsbird -s /run/bird/bird.ctl ext-community rt:65010:1 -t master4
 $ rsbird -s /run/bird/bird.ctl large-community 65010:1:2 -t master4
+
+# --where / -w passes a raw BIRD filter expression verbatim to ``show route ... where <EXPR>`. Always quote it — it contains spaces and []().
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'bgp_path ~ [= * 13335 * =]'   # AS13335 anywhere in the path
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'bgp_path.last = 264009'        # origin AS (BIRD 2.x+)
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'bgp_path.len > 3'              # path longer than 3 hops
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'bgp_community ~ [(0, 13335)]'  # tagged 0:13335
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'net ~ [143.0.143.0/24+]'       # that prefix and all more-specifics
+$ rsbird -s /run/bird/bird.ctl routes -t giganet -w 'source = RTS_BGP' -b           # BGP-learned, best only (filters compose)
 
 $ rsbird -s /run/bird/bird.ctl --json status | jq .router_id
 "10.0.0.1"
 ```
 
 The socket path can also come from `$RSBIRD_SOCKET`, so a typical session looks like `export RSBIRD_SOCKET=/run/bird/bird.ctl` and then plain `rsbird status`, `rsbird tables`, `rsbird routes`, etc.
-
 The `raw` subcommand is the **escape hatch** — it opens the control socket, sends an arbitrary command, and prints BIRD's reply byte-for-byte. Use it for commands the typed API doesn't model (e.g. `show route count`, `show memory`) or when debugging parsers:
 
 ```bash
@@ -74,6 +90,25 @@ $ rsbird -s /run/bird/bird.ctl raw "show route count"
 1007- 42 of 42 routes for 24 networks
 0000
 ```
+
+The `--where` / `-w` flag on `routes` is the **filter escape hatch**: its argument is handed to BIRD verbatim as the `where <EXPR>` clause of `show route`, so anything BIRD's filter language accepts works — including conditions the typed API doesn't model.
+It composes with the other `routes` filters (`--table`, `--protocol`, `--prefix`, `--best`, `--filtered`), each adding another clause. Quote the whole expression: it contains spaces and `[]()` that the shell would otherwise mangle.
+
+Handy expressions (BIRD attribute names are lowercase in the filter language across all versions, even though `show route all` prints `BGP.community`):
+
+| Goal | `--where` expression |
+| --- | --- |
+| Origin AS (last hop) | `bgp_path.last = 13335` *(BIRD 2.x+)* |
+| ASN anywhere in path | `bgp_path ~ [= * 13335 * =]` |
+| Path longer than N | `bgp_path.len > 3` |
+| Has standard community | `bgp_community ~ [(0, 13335)]` |
+| Has large community | `bgp_large_community ~ [(65010, 1, 2)]` |
+| Prefix + more-specifics | `net ~ [143.0.143.0/24+]` |
+| Length range | `net ~ [0.0.0.0/0{20,24}]` |
+| BGP-learned routes | `source = RTS_BGP` |
+| Next hop | `bgp_next_hop = 185.1.62.230` |
+
+The community shortcuts (`community` / `ext-community` / `large-community`) are just preset `--where` expressions — `community 0:13335` is exactly `routes -w 'bgp_community ~ [(0, 13335)]'`.
 
 All subcommands accept `--json` for machine-readable output. Run `rsbird <command> --help` for per-subcommand flags.
 

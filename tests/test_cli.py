@@ -38,10 +38,25 @@ _PROTOCOLS_BRIEF = (
     " rs2_ipv4   BGP        ---        up     12:52:10.923  Established   \n"
     "0000 \n"
 )
+# Summary reply (no BGP attribute block) — what `show route` without `all` gives.
 _ROUTES_REPLY = (
     "1007-Table master4:\n"
     " 10.5.5.0/24          unicast [rs1_ipv4 12:52:11.702] * (100) [AS65010i]\n"
     " \tvia 10.0.0.10 on eth0\n"
+    "0000 \n"
+)
+# Detail reply (with the BGP block) — what `show route ... all` gives, so the
+# rich table can fill PEER_AS (as_path head) and the COMMUNITY column.
+_ROUTES_DETAIL_REPLY = (
+    "1007-Table master4:\n"
+    " 10.5.5.0/24          unicast [rs1_ipv4 12:52:11.702] * (100) [AS65010i]\n"
+    " \tvia 10.0.0.10 on eth0\n"
+    "1008-\tType: BGP univ\n"
+    "1012-\tBGP.origin: IGP\n"
+    " \tBGP.as_path: 65020 65010\n"
+    " \tBGP.next_hop: 10.0.0.10\n"
+    " \tBGP.local_pref: 100\n"
+    " \tBGP.community: (0,13335) (65010,1)\n"
     "0000 \n"
 )
 
@@ -168,19 +183,42 @@ async def test_tables(mock_bird):
     assert out.split() == ["master4", "master6"]
 
 
-async def test_routes_summary(mock_bird):
-    mock_bird.on("show route table master4", _ROUTES_REPLY)
+async def test_routes_rich_table_has_all_columns(mock_bird):
+    """Default routes table fetches detail and shows origin/peer AS + community."""
+    mock_bird.on("show route table master4 all", _ROUTES_DETAIL_REPLY)
     rc, out, _ = await run_cli("-s", mock_bird.path, "routes", "-t", "master4")
     assert rc == 0, out
+    # Column headers
+    for col in ("ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME", "COMMUNITY"):
+        assert col in out, f"missing column {col}"
+    # Values
     assert "10.5.5.0/24" in out
-    assert "65010" in out
+    assert "65010" in out        # ORIGIN_AS (from the [AS65010i] marker)
+    assert "65020" in out        # PEER_AS (head of as_path 65020 65010)
+    assert "10.0.0.10" in out    # PEER_IP
+    assert "rs1_ipv4" in out     # PEER_NAME
+    assert "0:13335" in out      # COMMUNITY (all present)
+    assert "65010:1" in out
+
+
+async def test_routes_brief_skips_detail_and_extra_columns(mock_bird):
+    """--brief is the fast path: no detail fetch, no PEER_AS/COMMUNITY columns."""
+    mock_bird.on("show route table master4", _ROUTES_REPLY)
+    rc, out, _ = await run_cli(
+        "-s", mock_bird.path, "routes", "-t", "master4", "--brief",
+    )
+    assert rc == 0, out
+    assert "10.5.5.0/24" in out
+    assert "PEER_AS" not in out
+    assert "COMMUNITY" not in out
 
 
 async def test_route_shortcut(mock_bird):
-    mock_bird.on("show route for 10.5.5.0", _ROUTES_REPLY)
+    mock_bird.on("show route for 10.5.5.0 all", _ROUTES_DETAIL_REPLY)
     rc, out, _ = await run_cli("-s", mock_bird.path, "route", "10.5.5.0")
     assert rc == 0
     assert "10.5.5.0/24" in out
+    assert "65020" in out  # PEER_AS populated from detail
 
 
 async def test_routes_detail_renders_bgp_block(mock_bird):
@@ -219,21 +257,23 @@ async def test_neighbor_unknown_returns_nonzero(mock_bird):
 
 
 async def test_community(mock_bird):
+    # Community lookups fetch detail (note the trailing `all`).
     mock_bird.on(
-        "show route table master4 where bgp_community ~ [(65010, 1)]",
-        _ROUTES_REPLY,
+        "show route table master4 where bgp_community ~ [(65010, 1)] all",
+        _ROUTES_DETAIL_REPLY,
     )
     rc, out, _ = await run_cli(
         "-s", mock_bird.path, "community", "65010:1", "-t", "master4",
     )
     assert rc == 0
     assert "10.5.5.0/24" in out
+    assert "0:13335" in out  # COMMUNITY column populated
 
 
 async def test_ext_community(mock_bird):
     mock_bird.on(
-        "show route table master4 where bgp_ext_community ~ [(rt, 65010, 1)]",
-        _ROUTES_REPLY,
+        "show route table master4 where bgp_ext_community ~ [(rt, 65010, 1)] all",
+        _ROUTES_DETAIL_REPLY,
     )
     rc, _, _ = await run_cli(
         "-s", mock_bird.path, "ext-community", "rt:65010:1", "-t", "master4",
@@ -243,8 +283,8 @@ async def test_ext_community(mock_bird):
 
 async def test_large_community(mock_bird):
     mock_bird.on(
-        "show route table master4 where bgp_large_community ~ [(65010, 1, 2)]",
-        _ROUTES_REPLY,
+        "show route table master4 where bgp_large_community ~ [(65010, 1, 2)] all",
+        _ROUTES_DETAIL_REPLY,
     )
     rc, _, _ = await run_cli(
         "-s", mock_bird.path, "large-community", "65010:1:2", "-t", "master4",
