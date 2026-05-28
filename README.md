@@ -50,12 +50,20 @@ rs1_ipv4  BGP    up     Established
 rs2_ipv4  BGP    up     Established
 
 $ rsbird -s /run/bird/bird.ctl routes -t example
+   PREFIX        ORIGIN_AS  PEER_AS  PEER_IP         PEER_NAME  LEARNED              PREF
+-  ------------  ---------  -------  --------------  ---------  -------------------  ----
+*  192.0.2.0/24  64500      64497    198.51.100.230  rs1_ipv4   2026-05-21 12:52:11  100
+   192.0.2.0/24  64500      64498    198.51.100.231  rs2_ipv4   2026-05-21 12:52:10  100
+
+# the table omits communities and AS-path by default; -c / --community and
+# -A / --as-path append those columns (combine them for both):
+$ rsbird -s /run/bird/bird.ctl routes -t example -c
    PREFIX        ORIGIN_AS  PEER_AS  PEER_IP         PEER_NAME  LEARNED              PREF  COMMUNITY
 -  ------------  ---------  -------  --------------  ---------  -------------------  ----  ---------------------------
 *  192.0.2.0/24  64500      64497    198.51.100.230  rs1_ipv4   2026-05-21 12:52:11  100   0:64496 65535:65281 64500:1:2
    192.0.2.0/24  64500      64498    198.51.100.231  rs2_ipv4   2026-05-21 12:52:10  100   0:64496
 
-# the rich table fetches detail; --brief is the fast path (drops PEER_AS / COMMUNITY), -d switches to the verbose per-route block
+# --brief is the fast path (no detail fetch, drops PEER_AS); -d switches to the verbose per-route block
 $ rsbird -s /run/bird/bird.ctl routes -t example -p 192.0.2.1 -d
 * 192.0.2.0/24  via 198.51.100.230  on eth0  [rs1_ipv4 2026-05-21 12:52:11]  (100)  AS64500
     Type:         BGP unicast univ

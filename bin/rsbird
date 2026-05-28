@@ -121,10 +121,23 @@ def _all_communities(bgp) -> list[str]:
     return [str(c) for c in (*bgp.communities, *bgp.large_communities, *bgp.ext_communities)]
 
 
-def fmt_routes_table(routes) -> None:
-    """Rich table: origin/peer AS, peer IP/name, and all communities."""
-    rows = [
-        (
+def fmt_routes_table(routes, *, show_as_path: bool = False,
+                     show_community: bool = False) -> None:
+    """Routes table: origin/peer AS, peer IP/name, preference.
+
+    The AS-path and community columns are verbose, so they are off by default
+    and only appended when ``show_as_path`` / ``show_community`` are set.
+    """
+    cols = ["", "PREFIX", "ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME",
+            "LEARNED", "PREF"]
+    if show_as_path:
+        cols.append("AS_PATH")
+    if show_community:
+        cols.append("COMMUNITY")
+
+    rows = []
+    for r in routes:
+        row = [
             "*" if r.best else " ",
             r.prefix,
             str(r.origin_as) if r.origin_as is not None else "",
@@ -133,15 +146,14 @@ def fmt_routes_table(routes) -> None:
             r.protocol or "",
             _fmt_dt(r.learned),
             str(r.preference) if r.preference is not None else "",
-            " ".join(_all_communities(r.bgp)),
-        )
-        for r in routes
-    ]
-    _print_table(
-        ["", "PREFIX", "ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME",
-         "LEARNED", "PREF", "COMMUNITY"],
-        rows,
-    )
+        ]
+        if show_as_path:
+            path = r.bgp.as_path if r.bgp else None
+            row.append(" ".join(_as_hop(x) for x in path) if path else "")
+        if show_community:
+            row.append(" ".join(_all_communities(r.bgp)))
+        rows.append(tuple(row))
+    _print_table(cols, rows)
 
 
 def fmt_routes_brief(routes) -> None:
@@ -164,8 +176,9 @@ def fmt_routes_brief(routes) -> None:
     )
 
 
-def render_routes(routes, *, json_out: bool, detail: bool, brief: bool) -> None:
-    """Pick the route renderer: JSON / verbose block / brief table / rich table."""
+def render_routes(routes, *, json_out: bool, detail: bool, brief: bool,
+                  show_as_path: bool = False, show_community: bool = False) -> None:
+    """Pick the route renderer: JSON / verbose block / brief table / table."""
     if json_out:
         _print_json([r.to_dict() for r in routes])
     elif detail:
@@ -175,7 +188,8 @@ def render_routes(routes, *, json_out: bool, detail: bool, brief: bool) -> None:
     elif brief:
         fmt_routes_brief(routes)
     else:
-        fmt_routes_table(routes)
+        fmt_routes_table(routes, show_as_path=show_as_path,
+                         show_community=show_community)
 
 
 def _print_route_detail(r) -> None:
@@ -290,7 +304,8 @@ async def cmd_routes(args) -> int:
             where=args.where, detail=fetch_detail, best=args.best,
             filtered=args.filtered,
         )
-    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief)
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief,
+                  show_as_path=args.as_path, show_community=args.community)
     return 0
 
 
@@ -299,7 +314,8 @@ async def cmd_route(args) -> int:
     fetch_detail = not args.brief
     async with RsBird(_socket_arg(args), timeout=args.timeout) as bird:
         routes = await bird.routes(prefix=args.prefix, detail=fetch_detail)
-    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief)
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=args.brief,
+                  show_as_path=args.as_path, show_community=args.community)
     return 0
 
 
@@ -324,7 +340,10 @@ async def cmd_community(args, *, method_name: str) -> int:
         routes = await method(
             args.value, table=args.table, detail=True, best=args.best,
         )
-    render_routes(routes, json_out=args.json, detail=args.detail, brief=False)
+    # A community lookup shows the COMMUNITY column by default — it's the
+    # search target — while AS-path stays opt-in via --as-path.
+    render_routes(routes, json_out=args.json, detail=args.detail, brief=False,
+                  show_as_path=args.as_path, show_community=True)
     return 0
 
 
@@ -397,14 +416,22 @@ def build_parser() -> argparse.ArgumentParser:
                     help="only the best (preferred) route per prefix")
     sp.add_argument("--filtered", action="store_true",
                     help="only filtered (rejected by import) routes")
+    sp.add_argument("--community", "-c", action="store_true",
+                    help="add the COMMUNITY column (off by default)")
+    sp.add_argument("--as-path", "-A", action="store_true",
+                    help="add the AS_PATH column (off by default)")
     sp.add_argument("--detail", "-d", action="store_true",
                     help="verbose per-route block instead of the table")
     sp.add_argument("--brief", action="store_true",
-                    help="fast summary table (no detail fetch — drops "
-                         "PEER_AS and COMMUNITY columns)")
+                    help="fast summary table (no detail fetch — drops the "
+                         "PEER_AS column)")
 
     sp = sub.add_parser("route", help="show route for a prefix (shortcut)")
     sp.add_argument("prefix", help="IP or prefix to look up")
+    sp.add_argument("--community", "-c", action="store_true",
+                    help="add the COMMUNITY column (off by default)")
+    sp.add_argument("--as-path", "-A", action="store_true",
+                    help="add the AS_PATH column (off by default)")
     sp.add_argument("--detail", "-d", action="store_true",
                     help="verbose per-route block instead of the table")
     sp.add_argument("--brief", action="store_true",
@@ -422,8 +449,10 @@ def build_parser() -> argparse.ArgumentParser:
             cmd_name,
             help=f"find routes by {cmd_name.replace('-', ' ')}",
         )
-        sp.add_argument("value", help="e.g. 0:13335 / rt:65010:1 / 65010:1:2")
+        sp.add_argument("value", help="e.g. 0:64496 / rt:65010:1 / 65010:1:2")
         sp.add_argument("--table", "-t")
+        sp.add_argument("--as-path", "-A", action="store_true",
+                        help="add the AS_PATH column")
         sp.add_argument("--detail", "-d", action="store_true")
         sp.add_argument("--best", "-b", action="store_true")
         sp.set_defaults(_method=method_name)

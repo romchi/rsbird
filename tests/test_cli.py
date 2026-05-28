@@ -183,22 +183,47 @@ async def test_tables(mock_bird):
     assert out.split() == ["master4", "master6"]
 
 
-async def test_routes_rich_table_has_all_columns(mock_bird):
-    """Default routes table fetches detail and shows origin/peer AS + community."""
+async def test_routes_table_default_hides_community_and_as_path(mock_bird):
+    """Default routes table fetches detail for origin/peer AS but omits the
+    verbose COMMUNITY and AS_PATH columns (opt-in via -c / -A)."""
     mock_bird.on("show route table master4 all", _ROUTES_DETAIL_REPLY)
     rc, out, _ = await run_cli("-s", mock_bird.path, "routes", "-t", "master4")
     assert rc == 0, out
-    # Column headers
-    for col in ("ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME", "COMMUNITY"):
+    for col in ("ORIGIN_AS", "PEER_AS", "PEER_IP", "PEER_NAME"):
         assert col in out, f"missing column {col}"
-    # Values
+    assert "COMMUNITY" not in out
+    assert "AS_PATH" not in out
+    # Base values still present.
     assert "10.5.5.0/24" in out
     assert "65010" in out        # ORIGIN_AS (from the [AS65010i] marker)
     assert "65020" in out        # PEER_AS (head of as_path 65020 65010)
     assert "10.0.0.10" in out    # PEER_IP
     assert "rs1_ipv4" in out     # PEER_NAME
-    assert "0:64496" in out      # COMMUNITY (all present)
+
+
+async def test_routes_table_community_flag(mock_bird):
+    """-c / --community appends the COMMUNITY column."""
+    mock_bird.on("show route table master4 all", _ROUTES_DETAIL_REPLY)
+    rc, out, _ = await run_cli(
+        "-s", mock_bird.path, "routes", "-t", "master4", "-c",
+    )
+    assert rc == 0, out
+    assert "COMMUNITY" in out
+    assert "0:64496" in out      # all communities present
     assert "65010:1" in out
+    assert "AS_PATH" not in out  # still opt-in separately
+
+
+async def test_routes_table_as_path_flag(mock_bird):
+    """-A / --as-path appends the AS_PATH column with the full path."""
+    mock_bird.on("show route table master4 all", _ROUTES_DETAIL_REPLY)
+    rc, out, _ = await run_cli(
+        "-s", mock_bird.path, "routes", "-t", "master4", "--as-path",
+    )
+    assert rc == 0, out
+    assert "AS_PATH" in out
+    assert "65020 65010" in out  # full as_path, not just the PEER_AS head
+    assert "COMMUNITY" not in out
 
 
 async def test_routes_brief_skips_detail_and_extra_columns(mock_bird):
