@@ -4,11 +4,6 @@ A Python library for talking to a BIRD route server: connect to the control
 socket, send commands, parse the raw socket replies into typed Python data
 structures suitable for use by APIs (e.g. voltron-api).
 
-This document is the agreed contract for the rewrite that replaces
-`pybird@mh-v1.3.1`. It captures decisions, the data model, the API surface,
-the BIRD-version support matrix, the testing strategy and the work split
-between you and me.
-
 ## 1. Status of decisions
 
 | # | Decision | Choice |
@@ -241,7 +236,7 @@ class ConfigResult:
 
 - Timestamps are `datetime` objects; `to_dict()` emits ISO-8601 strings.
 - `as_path` keeps AS_SET as `frozenset[int]` — exactly conveys the set semantics.
-- Communities are first-class objects with `__str__` (`"0:13335"` / `"rt:0:64550"`); helpers like `Community.standard(0, 13335)` for construction.
+- Communities are first-class objects with `__str__` (`"0:64496"` / `"rt:0:64550"`); helpers like `Community.standard(0, 64496)` for construction.
 - Optional fields default to `None`/empty so BIRD 1.6 protocols (no channels)
   and BIRD 2+ protocols (channel list) share the same `Protocol` class.
 

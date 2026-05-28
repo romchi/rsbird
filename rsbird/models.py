@@ -91,7 +91,7 @@ class Community(_DictMixin):
     # str | int part separator — used for both __str__ and parse()
     _SEP: ClassVar[str] = ":"
 
-    def __str__(self) -> str:  # "0:13335" / "rt:0:64550" / "64500:1:2"
+    def __str__(self) -> str:  # "0:64496" / "rt:0:64550" / "64500:1:2"
         return self._SEP.join(str(p) for p in self.parts)
 
     def to_dict(self) -> dict[str, Any]:

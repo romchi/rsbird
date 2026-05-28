@@ -1,0 +1,248 @@
+services:
+  rs1:
+    image: pierky/bird:2.0.8
+    volumes:
+      - ./bird/rs1-bird.conf:/etc/bird/bird.conf
+    command: bird -c /etc/bird/bird.conf -d
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.10
+        ipv6_address: 2001:db8:123::10
+
+  rs2:
+    image: pierky/bird:2.0.8
+    volumes:
+      - ./bird/rs2-bird.conf:/etc/bird/bird.conf
+    command: bird -c /etc/bird/bird.conf -d
+    environment:
+      - BIRD_VERSION=2.0.8
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.20
+        ipv6_address: 2001:db8:123::20
+
+#  bird-1.6.3:
+#    image: pierky/bird:1.6.3
+#    volumes:
+#      - ./bird/bird-1.6.3.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=1.6.3
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.63
+#        ipv6_address: 2001:db8:123::63
+#  bird-1.6.6:
+#    image: pierky/bird:1.6.6
+#    volumes:
+#      - ./bird/bird-1.6.6.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=1.6.6
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.66
+#        ipv6_address: 2001:db8:123::66
+#  bird-1.6.7:
+#    image: pierky/bird:1.6.7
+#    volumes:
+#      - ./bird/bird-1.6.7.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=1.6.7
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.67
+#        ipv6_address: 2001:db8:123::67
+  bird-1.6.8v4:
+    image: pierky/bird:1.6.8
+    volumes:
+      - ./bird/bird-1.6.8v4.conf:/etc/bird/bird.conf
+      - ./run:/usr/local/var/run/
+    command: bird -c /etc/bird/bird.conf -s /usr/local/var/run/b168v4.ctl -d
+    # entrypoint: /scripts/entrypoint.sh
+    environment:
+      - BIRD_VERSION=1.6.8
+    depends_on:
+      - rs1
+      - rs2
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.68
+  bird-1.6.8v6:
+    image: pierky/bird:1.6.8
+    volumes:
+      - ./bird/bird-1.6.8v6.conf:/etc/bird/bird.conf
+      - ./run:/usr/local/var/run/
+    command: bird6 -c /etc/bird/bird.conf -s /usr/local/var/run/b168v6.ctl -d
+    # entrypoint: /scripts/entrypoint.sh
+    environment:
+      - BIRD_VERSION=1.6.8
+    depends_on:
+      - rs1
+      - rs2
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.168
+        ipv6_address: 2001:db8:123::68
+#  bird-2.0.6:
+#    image: pierky/bird:2.0.6
+#    volumes:
+#      - ./bird/bird-2.0.6.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.6
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.206
+#        ipv6_address: 2001:db8:123::206
+#  bird-2.0.7:
+#    image: pierky/bird:2.0.7
+#    volumes:
+#      - ./bird/bird-2.0.7.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.7
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.207
+#        ipv6_address: 2001:db8:123::207
+  bird-2.0.8:
+    image: pierky/bird:2.0.8
+    volumes:
+      - ./bird/bird-2.0.8.conf:/etc/bird/bird.conf
+      - ./run:/usr/local/var/run/
+    command: bird -c /etc/bird/bird.conf -s /usr/local/var/run/b208.ctl -d
+    # entrypoint: /scripts/entrypoint.sh
+    environment:
+      - BIRD_VERSION=2.0.8
+    depends_on:
+      - rs1
+      - rs2
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.208
+        ipv6_address: 2001:db8:123::208
+#  bird-2.0.9:
+#    image: pierky/bird:2.0.9
+#    volumes:
+#      - ./bird/bird-2.0.9.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.9
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.209
+#        ipv6_address: 2001:db8:123::209
+#  bird-2.0.10:
+#    image: pierky/bird:2.0.10
+#    volumes:
+#      - ./bird/bird-2.0.10.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.10
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.210
+#        ipv6_address: 2001:db8:123::210
+#  bird-2.0.11:
+#    image: pierky/bird:2.0.11
+#    volumes:
+#      - ./bird/bird-2.0.11.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.11
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.211
+#        ipv6_address: 2001:db8:123::211
+#  bird-2.0.13:
+#    image: pierky/bird:2.13
+#    volumes:
+#      - ./bird/bird-2.0.13.conf:/etc/bird/bird.conf
+#      - ./scripts:/scripts
+#      - ./../pybird/__init__.py:/scripts/pybird.py
+#    # command: bird -c /etc/bird/bird.conf -d
+#    entrypoint: /scripts/entrypoint.sh
+#    environment:
+#      - BIRD_VERSION=2.0.13
+#    depends_on:
+#      - rs1
+#      - rs2
+#    networks:
+#      birdnet:
+#        ipv4_address: 10.123.123.213
+#        ipv6_address: 2001:db8:123::213
+  bird-3.1.2:
+    image: pierky/bird:3.1.2
+    volumes:
+      - ./bird/bird-3.1.2.conf:/etc/bird/bird.conf
+      - ./run:/usr/local/var/run/
+    command: bird -c /etc/bird/bird.conf -s /usr/local/var/run/b312.ctl -d
+    # entrypoint: /scripts/entrypoint.sh
+    environment:
+      - BIRD_VERSION=3.1.2
+    depends_on:
+      - rs1
+      - rs2
+    networks:
+      birdnet:
+        ipv4_address: 10.123.123.31
+        ipv6_address: 2001:db8:123::31
+
+networks:
+  birdnet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+     config:
+       - subnet: 10.123.123.0/24
+       - subnet: 2001:db8:123::/64

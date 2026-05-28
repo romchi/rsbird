@@ -56,7 +56,7 @@ _ROUTES_DETAIL_REPLY = (
     " \tBGP.as_path: 65020 65010\n"
     " \tBGP.next_hop: 10.0.0.10\n"
     " \tBGP.local_pref: 100\n"
-    " \tBGP.community: (0,13335) (65010,1)\n"
+    " \tBGP.community: (0,64496) (65010,1)\n"
     "0000 \n"
 )
 
@@ -197,7 +197,7 @@ async def test_routes_rich_table_has_all_columns(mock_bird):
     assert "65020" in out        # PEER_AS (head of as_path 65020 65010)
     assert "10.0.0.10" in out    # PEER_IP
     assert "rs1_ipv4" in out     # PEER_NAME
-    assert "0:13335" in out      # COMMUNITY (all present)
+    assert "0:64496" in out      # COMMUNITY (all present)
     assert "65010:1" in out
 
 
@@ -267,7 +267,7 @@ async def test_community(mock_bird):
     )
     assert rc == 0
     assert "10.5.5.0/24" in out
-    assert "0:13335" in out  # COMMUNITY column populated
+    assert "0:64496" in out  # COMMUNITY column populated
 
 
 async def test_ext_community(mock_bird):

@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rsbird"
-version = "0.1.0"
+version = "1.0.1"
 description = "Async Python client and parsers for the BIRD route-server control socket."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Example" }]
+authors = [{ name = "Example IXP" }]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",

@@ -18,10 +18,10 @@ from rsbird.models import (
 
 class TestCommunity:
     def test_standard_from_string(self):
-        c = Community.parse("0:13335")
+        c = Community.parse("0:64496")
         assert c.kind is CommunityKind.STANDARD
-        assert c.parts == (0, 13335)
-        assert str(c) == "0:13335"
+        assert c.parts == (0, 64496)
+        assert str(c) == "0:64496"
 
     def test_large_from_string(self):
         c = Community.parse("65010:1:2")
@@ -36,12 +36,12 @@ class TestCommunity:
         assert str(c) == "rt:65010:1"
 
     def test_parse_from_tuple(self):
-        assert Community.parse((0, 13335)).kind is CommunityKind.STANDARD
+        assert Community.parse((0, 64496)).kind is CommunityKind.STANDARD
         assert Community.parse(("rt", 0, 64550)).kind is CommunityKind.EXTENDED
         assert Community.parse((64500, 1, 2)).kind is CommunityKind.LARGE
 
     def test_parse_passes_existing_community_through(self):
-        c = Community.standard(0, 13335)
+        c = Community.standard(0, 64496)
         assert Community.parse(c) is c
 
     def test_parse_rejects_garbage(self):
@@ -81,7 +81,7 @@ class TestSerialisation:
             as_path=[65010, 65020],
             next_hop=["10.0.0.1"],
             local_pref=100,
-            communities=[Community.parse("0:13335")],
+            communities=[Community.parse("0:64496")],
         )
         r = Route(prefix="10.5.5.0/24", best=True, bgp=bgp)
         d = r.to_dict()
@@ -89,7 +89,7 @@ class TestSerialisation:
         assert d["best"] is True
         assert d["bgp"]["origin"] == "IGP"
         assert d["bgp"]["as_path"] == [65010, 65020]
-        assert d["bgp"]["communities"][0]["str"] == "0:13335"
+        assert d["bgp"]["communities"][0]["str"] == "0:64496"
 
     def test_as_set_in_path_serialises_as_sorted_list(self):
         bgp = BgpAttrs(as_path=[65010, frozenset({64500, 64501, 64502})])

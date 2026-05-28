@@ -50,31 +50,31 @@ rs1_ipv4  BGP    up     Established
 rs2_ipv4  BGP    up     Established
 
 $ rsbird -s /run/bird/bird.ctl routes -t example
-   PREFIX          ORIGIN_AS  PEER_AS  PEER_IP       PEER_NAME  LEARNED              PREF  COMMUNITY
--  --------------  ---------  -------  ------------  ---------  -------------------  ----  ----------------------------
-*  192.0.2.0/24  64500     6939     198.51.100.230  rs1_ipv4   2026-05-21 12:52:11  100   0:13335 65535:65281 64500:1:2
-   192.0.2.0/24  64500     7642     198.51.100.231  rs2_ipv4   2026-05-21 12:52:10  100   0:13335
+   PREFIX        ORIGIN_AS  PEER_AS  PEER_IP         PEER_NAME  LEARNED              PREF  COMMUNITY
+-  ------------  ---------  -------  --------------  ---------  -------------------  ----  ---------------------------
+*  192.0.2.0/24  64500      64497    198.51.100.230  rs1_ipv4   2026-05-21 12:52:11  100   0:64496 65535:65281 64500:1:2
+   192.0.2.0/24  64500      64498    198.51.100.231  rs2_ipv4   2026-05-21 12:52:10  100   0:64496
 
 # the rich table fetches detail; --brief is the fast path (drops PEER_AS / COMMUNITY), -d switches to the verbose per-route block
 $ rsbird -s /run/bird/bird.ctl routes -t example -p 192.0.2.1 -d
 * 192.0.2.0/24  via 198.51.100.230  on eth0  [rs1_ipv4 2026-05-21 12:52:11]  (100)  AS64500
     Type:         BGP unicast univ
     Origin:       IGP
-    Peer AS:      6939
+    Peer AS:      64497
     Origin AS:    64500
-    AS path:      6939 264409 53062 64500
-    Community:    0:13335 65535:65281
+    AS path:      64497 64510 64511 64500
+    Community:    0:64496 65535:65281
 
-$ rsbird -s /run/bird/bird.ctl community 0:13335 -t master4
+$ rsbird -s /run/bird/bird.ctl community 0:64496 -t master4
 $ rsbird -s /run/bird/bird.ctl ext-community rt:65010:1 -t master4
 $ rsbird -s /run/bird/bird.ctl large-community 65010:1:2 -t master4
 
-# --where / -w passes a raw BIRD filter expression verbatim to ``show route ... where <EXPR>`. Always quote it — it contains spaces and []().
-$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_path ~ [= * 13335 * =]'   # AS13335 anywhere in the path
-$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_path.last = 64500'        # origin AS (BIRD 2.x+)
+# --where / -w passes a raw BIRD filter expression verbatim to `show route ... where <EXPR>`. Always quote it — it contains spaces and []().
+$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_path ~ [= * 64496 * =]'   # AS64496 anywhere in the path
+$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_path.last = 64500'         # origin AS (BIRD 2.x+)
 $ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_path.len > 3'              # path longer than 3 hops
-$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_community ~ [(0, 13335)]'  # tagged 0:13335
-$ rsbird -s /run/bird/bird.ctl routes -t example -w 'net ~ [192.0.2.0/24+]'       # that prefix and all more-specifics
+$ rsbird -s /run/bird/bird.ctl routes -t example -w 'bgp_community ~ [(0, 64496)]'  # tagged 0:64496
+$ rsbird -s /run/bird/bird.ctl routes -t example -w 'net ~ [192.0.2.0/24+]'         # that prefix and all more-specifics
 $ rsbird -s /run/bird/bird.ctl routes -t example -w 'source = RTS_BGP' -b           # BGP-learned, best only (filters compose)
 
 $ rsbird -s /run/bird/bird.ctl --json status | jq .router_id
@@ -98,17 +98,17 @@ Handy expressions (BIRD attribute names are lowercase in the filter language acr
 
 | Goal | `--where` expression |
 | --- | --- |
-| Origin AS (last hop) | `bgp_path.last = 13335` *(BIRD 2.x+)* |
-| ASN anywhere in path | `bgp_path ~ [= * 13335 * =]` |
+| Origin AS (last hop) | `bgp_path.last = 64496` *(BIRD 2.x+)* |
+| ASN anywhere in path | `bgp_path ~ [= * 64496 * =]` |
 | Path longer than N | `bgp_path.len > 3` |
-| Has standard community | `bgp_community ~ [(0, 13335)]` |
+| Has standard community | `bgp_community ~ [(0, 64496)]` |
 | Has large community | `bgp_large_community ~ [(65010, 1, 2)]` |
 | Prefix + more-specifics | `net ~ [192.0.2.0/24+]` |
 | Length range | `net ~ [0.0.0.0/0{20,24}]` |
 | BGP-learned routes | `source = RTS_BGP` |
 | Next hop | `bgp_next_hop = 198.51.100.230` |
 
-The community shortcuts (`community` / `ext-community` / `large-community`) are just preset `--where` expressions — `community 0:13335` is exactly `routes -w 'bgp_community ~ [(0, 13335)]'`.
+The community shortcuts (`community` / `ext-community` / `large-community`) are just preset `--where` expressions — `community 0:64496` is exactly `routes -w 'bgp_community ~ [(0, 64496)]'`.
 
 All subcommands accept `--json` for machine-readable output. Run `rsbird <command> --help` for per-subcommand flags.
 
